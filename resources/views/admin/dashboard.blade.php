@@ -31,6 +31,6 @@
     <a href="{{ route('admin.products.index') }}" class="button button-red">Kelola Produk</a>
     <a href="{{ route('admin.customers.index') }}" class="button button-blue">Kelola Customers</a>
     <a href="{{ route('admin.discounts.index') }}" class="button button-blue">Kelola diskon</a>
-    <a href="{{ route('pos.index') }}" class="button button-blue">Kelola pos</a>
+    <a href="{{ route('admin.pos.index') }}" class="button button-blue">Kelola pos</a>
 </body>
 </html>

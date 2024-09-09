@@ -41,7 +41,7 @@
                             <td class="py-2 px-4 border border-gray-300">{{ $loop->iteration }}</td>
                             <td class="py-2 px-4 border border-gray-300">{{ $product->name }}</td>
                             <td class="py-2 px-4 border border-gray-300">{{ $product->description }}</td>
-                            <td class="py-2 px-4 border border-gray-300">${{ number_format($product->price, 2) }}</td>
+                            <td class="py-2 px-4 border border-gray-300"> {{ $product->price }}</td>
                             <td class="py-2 px-4 border border-gray-300">{{ $product->stock }}</td>
                             <td class="py-2 px-4 border border-gray-300">
                                 @if($product->image)

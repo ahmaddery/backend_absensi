@@ -12,10 +12,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all()->map(function ($product) {
-            $product->price = (float) $product->price;
-            return $product;
-        });
+        // Mengambil semua produk yang ada
+        $products = Product::all();
     
         return view('admin.products.index', compact('products'));
     }
@@ -35,24 +33,24 @@ class ProductController extends Controller
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+    
         $product = new Product();
         $product->name = $request->input('name');
         $product->description = $request->input('description');
-        $product->price = $request->input('price');
+        $product->price = $request->input('price'); // Pastikan ini adalah float
         $product->stock = $request->input('stock');
-
+    
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('public/images');
             $product->image = Storage::url($imagePath);
         }
-
+    
         $product->save();
-
+    
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
@@ -70,27 +68,27 @@ class ProductController extends Controller
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+    
         $product->name = $request->input('name');
         $product->description = $request->input('description');
-        $product->price = $request->input('price');
+        $product->price = $request->input('price'); // Pastikan ini adalah float
         $product->stock = $request->input('stock');
-
+    
         if ($request->hasFile('image')) {
             if ($product->image) {
                 Storage::delete('public' . parse_url($product->image, PHP_URL_PATH));
             }
-
+    
             $imagePath = $request->file('image')->store('public/images');
             $product->image = Storage::url($imagePath);
         }
-
+    
         $product->save();
-
+    
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }
 

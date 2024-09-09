@@ -28,23 +28,17 @@ class Product extends Model
         'deleted_at',
     ];
 
-    // Jika Anda menggunakan guarded
-    // protected $guarded = [];
-
-    // Untuk mengatur format harga
+    // Format harga menjadi format mata uang Indonesia (RP)
     public function getPriceAttribute($value)
     {
-        return number_format($value, 2, '.', ',');
+        return 'Rp ' . number_format($value, 0, ',', '.');
     }
 
-    // Untuk menyimpan format harga
+    // Menghapus format mata uang saat menyimpan ke database
     public function setPriceAttribute($value)
     {
-        $this->attributes['price'] = str_replace(',', '', $value);
+        // Hapus 'Rp ' dan titik dari nilai harga sebelum menyimpan ke database
+        $this->attributes['price'] = (float) str_replace(['Rp ', '.'], ['', ''], $value);
     }
-
-
-
-
 
 }

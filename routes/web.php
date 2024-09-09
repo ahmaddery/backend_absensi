@@ -100,6 +100,7 @@ Route::middleware('admin')->group(function () {
 });
 
 Route::middleware('admin')->group(function () {
-    Route::get('pos', [PosController::class, 'index'])->name('pos.index');
-    Route::post('pos', [PosController::class, 'store'])->name('admin.pos.store');
+    Route::get('/pos', [PosController::class, 'index'])->name('admin.pos.index');
+    Route::post('/pos/add-to-cart/{productId}', [PosController::class, 'addToCart'])->name('admin.pos.add-to-cart');
+    Route::get('/pos/cart', [PosController::class, 'showCart'])->name('admin.pos.show-cart');
 });
