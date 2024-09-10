@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\PosController;
+use App\Http\Controllers\Admin\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,3 +105,8 @@ Route::middleware('admin')->group(function () {
     Route::post('/pos/add-to-cart/{productId}', [PosController::class, 'addToCart'])->name('admin.pos.add-to-cart');
     Route::get('/pos/cart', [PosController::class, 'showCart'])->name('admin.pos.show-cart');
 });
+
+
+Route::get('pos/checkout', [CheckoutController::class, 'checkout'])->name('admin.pos.checkout');
+#Route::post('/midtrans/callback', [CheckoutController::class, 'midtransCallback'])->name('midtrans.callback');
+Route::post('/midtrans/callback', [CheckoutController::class, 'midtransCallback']);

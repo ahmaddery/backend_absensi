@@ -19,21 +19,29 @@ class OrderItem extends Model
         'price',
     ];
 
+    protected $casts = [
+        'price' => 'decimal:2', // Ensure this is correctly cast
+    ];
+
     protected $dates = ['deleted_at'];
 
-    // Define relationships
+    // Format price as currency for display
+    public function getPriceAttribute($value)
+    {
+        return 'Rp ' . number_format($value, 0, ',', '.');
+    }
 
-    /**
-     * Get the order that owns the OrderItem.
-     */
+    // Remove formatting before saving to database
+    public function setPriceAttribute($value)
+    {
+        $this->attributes['price'] = (float) str_replace(['Rp ', '.'], ['', ''], $value);
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
-    /**
-     * Get the product associated with the OrderItem.
-     */
     public function product()
     {
         return $this->belongsTo(Product::class);

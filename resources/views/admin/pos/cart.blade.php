@@ -66,4 +66,5 @@
 
     {{-- Tautan kembali ke POS --}}
     <a href="{{ route('admin.pos.index') }}" class="btn btn-primary">Kembali ke POS</a>
+    <a href="{{ route('admin.pos.checkout') }}" class="btn btn-primary">Bayar</a>
 </div>
