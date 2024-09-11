@@ -71,20 +71,15 @@ class PosController extends Controller
 
     public function showCart(Request $request)
     {
-        $customerId = $request->input('customer_id');
-        $query = Cart::where('user_id', auth()->id());
-    
-        // Filter berdasarkan customer_id jika ada
-        if ($customerId) {
-            $query->where('customer_id', $customerId);
-        }
-    
-        // Ambil keranjang dengan relasi item dan produk
-        $cart = $query->with('items.product')->first();
-    
+        // Ambil keranjang tanpa filter berdasarkan customer_id
+        $cart = Cart::where('user_id', auth()->id())
+                    ->with('items.product')
+                    ->first();
+        
         // Menampilkan view keranjang
-        return view('admin.pos.cart', compact('cart', 'customerId'));
+        return view('admin.pos.cart', compact('cart'));
     }
+    
     
 }
 

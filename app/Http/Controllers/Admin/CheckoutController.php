@@ -27,42 +27,26 @@ class CheckoutController extends Controller
 
     public function checkout(Request $request)
     {
-        // Validasi input voucher
-        $request->validate([
-            'voucher_code' => 'nullable|string',
-            'customer_id' => 'nullable|exists:customers,id', // Validate customer_id
-        ]);
-
         // Ambil keranjang berdasarkan user aktif
         $cart = Cart::where('user_id', auth()->id())->with('items.product')->firstOrFail();
-
+        
+        // Ambil customer_id dari cart
+        $customerId = $cart->customer_id;
+    
         // Hitung total harga keranjang
         $totalHarga = $cart->items->sum(function ($item) {
             return str_replace(['Rp ', '.'], ['', ''], $item->product->price) * $item->quantity;
         });
-
-        // Cek kode voucher jika ada
-        $discount = 0;
-        if ($request->voucher_code) {
-            $voucher = Discount::where('code', $request->voucher_code)
-                                ->where('active', true)
-                                ->first();
-            if ($voucher) {
-                $discount = ($voucher->percentage / 100) * $totalHarga;
-            } else {
-                return redirect()->back()->withErrors('Voucher tidak valid.');
-            }
-        }
-
-        // Total setelah diskon
-        $totalAfterDiscount = $totalHarga - $discount;
-
+    
+        // Total setelah diskon (tanpa diskon)
+        $totalAfterDiscount = $totalHarga;
+    
         // Buat data transaksi
         $transactionDetails = [
             'order_id' => uniqid(), // Generate unique order ID
             'gross_amount' => $totalAfterDiscount,
         ];
-
+    
         // Data item yang dibeli
         $items = $cart->items->map(function ($item) {
             return [
@@ -72,47 +56,41 @@ class CheckoutController extends Controller
                 'name' => $item->product->name,
             ];
         })->toArray();
-
-        // Jika ada diskon, tambahkan ke item
-        if ($discount > 0) {
-            $items[] = [
-                'id' => 'DISCOUNT',
-                'price' => -$discount,
-                'quantity' => 1,
-                'name' => 'Voucher Discount',
-            ];
-        }
-
+    
         // Data pembeli
         $customerDetails = [
             'first_name' => auth()->user()->name,
             'email' => auth()->user()->email,
         ];
-
+    
         // Data yang dikirim ke Midtrans
         $payload = [
             'transaction_details' => $transactionDetails,
             'item_details' => $items,
             'customer_details' => $customerDetails,
         ];
-
+    
         // Generate Snap token dari Midtrans
-        $snapToken = Snap::getSnapToken($payload);
-
+        try {
+            $snapToken = Snap::getSnapToken($payload);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error generating Snap token: ' . $e->getMessage());
+        }
+    
         // Simpan order di database
-        DB::transaction(function () use ($cart, $transactionDetails, $discount, $totalAfterDiscount, $request) {
+        DB::transaction(function () use ($cart, $transactionDetails, $totalAfterDiscount, $customerId) {
             $order = Order::create([
                 'user_id' => auth()->id(),
-                'customer_id' => $request->customer_id, // Set customer_id
+                'customer_id' => $customerId, // Ambil customer_id dari cart
                 'order_date' => now(),
                 'total' => $totalAfterDiscount,
-                'discount' => $discount,
+                'discount' => 0, // Tidak ada diskon
                 'payment_method' => 'midtrans',
                 'status' => 'pending',
                 'order_id' => $transactionDetails['order_id'],
                 'gross_amount' => $totalAfterDiscount,
             ]);
-
+    
             foreach ($cart->items as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -120,19 +98,21 @@ class CheckoutController extends Controller
                     'quantity' => $item->quantity,
                     'price' => $item->product->price,
                 ]);
-
+    
                 // Decrement product stock
                 $product = $item->product;
                 $product->stock -= $item->quantity;
                 $product->save();
             }
-
+    
             // Clear cart
             $cart->items()->delete();
         });
-
+    
         return view('admin.pos.checkout', compact('snapToken'));
     }
+    
+    
 
     public function midtransCallback(Request $request)
     {

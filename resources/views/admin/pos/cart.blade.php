@@ -1,23 +1,7 @@
-{{-- resources/views/admin/pos/cart.blade.php --}}
-
 <div class="container">
     <h1>Keranjang Belanja</h1>
 
-    {{-- Dropdown untuk memilih customer --}}
-    <form method="GET" action="{{ route('admin.pos.show-cart') }}" class="mb-4">
-        <div class="form-group">
-            <label for="customer_id">Pilih Customer:</label>
-            <select name="customer_id" id="customer_id" class="form-control" onchange="this.form.submit()">
-                <option value="">Guest</option>
-                @foreach(App\Models\Customer::all() as $customer)
-                    <option value="{{ $customer->id }}" {{ $customerId == $customer->id ? 'selected' : '' }}>
-                        {{ $customer->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-    </form>
-
+    {{-- Menampilkan keranjang belanja --}}
     @if ($cart && $cart->items->count())
         <table class="table table-bordered">
             <thead>
@@ -61,7 +45,7 @@
             </tfoot>
         </table>
     @else
-        <p>Keranjang belanja untuk {{ $customerId ? App\Models\Customer::find($customerId)->name : 'Guest' }} kosong.</p>
+        <p>Keranjang belanja kosong.</p>
     @endif
 
     {{-- Tautan kembali ke POS --}}
