@@ -108,5 +108,7 @@ Route::middleware('admin')->group(function () {
 
 
 Route::get('pos/checkout', [CheckoutController::class, 'checkout'])->name('admin.pos.checkout');
+Route::post('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+
 #Route::post('/midtrans/callback', [CheckoutController::class, 'midtransCallback'])->name('midtrans.callback');
 Route::post('/midtrans/callback', [CheckoutController::class, 'midtransCallback']);
