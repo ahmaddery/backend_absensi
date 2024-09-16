@@ -2,9 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\API\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +30,13 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('register', [RegisterController::class, 'register']);
 
-Route::get('discounts/{code}', [DiscountController::class, 'show']);
+
+// Route untuk mengambil semua produk
+//Route::middleware('/')->group(function () {
+Route::get('/product', [ProductController::class, 'index']);
+//});
+
+
+Route::get('/customers', [CustomerController::class, 'index']);    // READ
+Route::post('/customers', [CustomerController::class, 'store']);   // CREATE
+Route::put('/customers/{id}', [CustomerController::class, 'update']);  // EDIT

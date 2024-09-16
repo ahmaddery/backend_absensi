@@ -1,3 +1,5 @@
+@include('admin.layouts.header')
+@include('admin.layouts.navbar')
 <div class="container">
     <h1>Customers List</h1>
 
