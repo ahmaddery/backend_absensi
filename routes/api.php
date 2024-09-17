@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,7 @@ Route::post('register', [RegisterController::class, 'register']);
 
 
 // Route untuk mengambil semua produk
-//Route::middleware('/')->group(function () {
+//Route::middleware('auth')->group(function () {
 Route::get('/product', [ProductController::class, 'index']);
 //});
 
@@ -40,3 +41,15 @@ Route::get('/product', [ProductController::class, 'index']);
 Route::get('/customers', [CustomerController::class, 'index']);    // READ
 Route::post('/customers', [CustomerController::class, 'store']);   // CREATE
 Route::put('/customers/{id}', [CustomerController::class, 'update']);  // EDIT
+
+
+
+
+Route::get('/cart', [CartController::class, 'index']);
+//Route::get('/cart/{id}', [CartController::class, 'show']);
+Route::post('/cart', [CartController::class, 'store']);
+Route::put('/cart/{id}', [CartController::class, 'update']);
+Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::get('/cart/{cartId}/items', [CartController::class, 'showCartItems']);
+Route::post('/cart/add-item', [CartController::class, 'addCartItem']);
+ // Menambah item ke cart berdasarkan customer_id
