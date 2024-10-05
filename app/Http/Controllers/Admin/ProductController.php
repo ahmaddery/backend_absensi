@@ -18,7 +18,6 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products'));
     }
     
-
     public function create()
     {
         return view('admin.products.create');
@@ -26,11 +25,13 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        // Tambahkan validasi untuk barcode
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
+            'barcode' => 'nullable|string|max:50|unique:products,barcode', // Tambahkan barcode ke validasi
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
@@ -43,6 +44,7 @@ class ProductController extends Controller
         $product->description = $request->input('description');
         $product->price = $request->input('price'); // Pastikan ini adalah float
         $product->stock = $request->input('stock');
+        $product->barcode = $request->input('barcode'); // Simpan barcode
     
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('public/images');
@@ -61,11 +63,13 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        // Tambahkan validasi untuk barcode (unik tapi kecuali barcode produk itu sendiri)
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
+            'barcode' => 'nullable|string|max:50|unique:products,barcode,' . $product->id, // Validasi barcode unik
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
@@ -77,6 +81,7 @@ class ProductController extends Controller
         $product->description = $request->input('description');
         $product->price = $request->input('price'); // Pastikan ini adalah float
         $product->stock = $request->input('stock');
+        $product->barcode = $request->input('barcode'); // Update barcode
     
         if ($request->hasFile('image')) {
             if ($product->image) {
@@ -102,21 +107,22 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
+
     public function trashed()
-{
-    $products = Product::onlyTrashed()->get()->map(function ($product) {
-        $product->price = (float) $product->price; // Cast price to float
-        return $product;
-    });
+    {
+        $products = Product::onlyTrashed()->get()->map(function ($product) {
+            $product->price = (float) $product->price; // Cast price to float
+            return $product;
+        });
 
-    return view('admin.products.trashed', compact('products'));
-}
+        return view('admin.products.trashed', compact('products'));
+    }
 
-public function restore($id)
-{
-    $product = Product::withTrashed()->findOrFail($id);
-    $product->restore();
+    public function restore($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+        $product->restore();
 
-    return redirect()->route('admin.products.index')->with('success', 'Product restored successfully.');
-}
+        return redirect()->route('admin.products.index')->with('success', 'Product restored successfully.');
+    }
 }

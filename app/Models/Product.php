@@ -20,6 +20,7 @@ class Product extends Model
         'price',
         'stock',
         'image',
+        'barcode',
     ];
 
     protected $dates = [
@@ -40,5 +41,5 @@ class Product extends Model
         // Hapus 'Rp ' dan titik dari nilai harga sebelum menyimpan ke database
         $this->attributes['price'] = (float) str_replace(['Rp ', '.'], ['', ''], $value);
     }
-
+    
 }

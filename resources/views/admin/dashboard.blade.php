@@ -1,5 +1,3 @@
-@include('admin.layouts.header')
-@include('admin.layouts.navbar')
 
     <style>
         /* Simple styling for the button */
@@ -22,8 +20,4 @@
     </style>
 
     <h1>Halaman Admin</h1>
-    <a href="{{ route('admin.permissions.index') }}" class="button">Kelola Roles</a>
     <a href="{{ route('admin.products.index') }}" class="button button-red">Kelola Produk</a>
-    <a href="{{ route('admin.customers.index') }}" class="button button-blue">Kelola Customers</a>
-    <a href="{{ route('admin.discounts.index') }}" class="button button-blue">Kelola diskon</a>
-    <a href="{{ route('admin.pos.index') }}" class="button button-blue">Kelola pos</a>
